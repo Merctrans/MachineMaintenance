@@ -76,6 +76,8 @@
             <group>
               <field name="code"/>
               <field name="name"/>
+              <field name="equipment_id" />
+              <field name="device_list" widget="many2many_tags" domain="[('equipment_id','=',equipment_id)]"/>
               <field name="department"/>
               <field name="factory"/>
             </group>

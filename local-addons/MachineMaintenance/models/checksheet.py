@@ -17,6 +17,8 @@ class CheckSheet(models.Model):
 
     code = fields.Char("Check Sheet Code", compute="_generate_check_sheet_code")
     name = fields.Char("Check Sheet Name*", required=True)
+    equipment_id = fields.Many2one("maintenance.equipment", string="Equipment*")
+    device_list = fields.Many2many("machine.device", string="Device List")
     department = fields.Many2one(
         "machine.department", string="Department*", required=True
     )
