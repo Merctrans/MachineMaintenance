@@ -82,6 +82,7 @@ class EntryData(models.Model):
 
     check_sheet = fields.Many2one("check.sheet", string="Check Sheet")
     device_id = fields.Many2one("machine.device", string="Device")
+    calendar_event = fields.Many2one("calendar.event", string="Work Order")
     work_detail = fields.Char("Detailed Work", required=True)
     action = fields.Selection(
         selection=[
