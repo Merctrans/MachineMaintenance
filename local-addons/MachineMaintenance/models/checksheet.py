@@ -74,7 +74,6 @@ class CheckSheet(models.Model):
                     rec.frequency = 0
 
     entry_data = fields.One2many("entry.data", "check_sheet", string="Entry Data")
-    device = fields.Many2many("maintenance.device", string="Device")
 
 
 class EntryData(models.Model):
@@ -82,6 +81,7 @@ class EntryData(models.Model):
     _description = "Data Entry for Check sheet"
 
     check_sheet = fields.Many2one("check.sheet", string="Check Sheet")
+    device_id = fields.Many2one("machine.device", string="Device")
     work_detail = fields.Char("Detailed Work", required=True)
     action = fields.Selection(
         selection=[
@@ -95,8 +95,8 @@ class EntryData(models.Model):
     )
     entry_type = fields.Selection(selection=[("number", "Number"), ("text", "Text")])
 
-    lcl = fields.Float(string="LCL", default=0.0)
-    ucl = fields.Float(string="UCL", default=0.0)
+    lcl = fields.Float(string="LCL", related="device_id.lcl", default=0.0)
+    ucl = fields.Float(string="UCL", related="device_id.ucl", default=0.0)
     value_show = fields.Char(string="Value Show")
     result_check = fields.Selection(
         selection=[("ok", "OK"), ("ng", "NG")],

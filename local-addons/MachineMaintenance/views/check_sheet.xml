@@ -16,6 +16,7 @@
           <group>
             <group>
               <field name="check_sheet"/>
+              <field name="device_id" />
               <field name="work_detail"/>
               <field name="action"/>
               <field name="entry_type" widget="radio"/>
@@ -42,6 +43,7 @@
       <field name="arch" type="xml">
         <tree string="Entry Transactions">
           <field name="check_sheet"/>
+          <field name="device_id" />
           <field name="work_detail"/>
           <field name="action"/>
           <field name="entry_type" widget="radio"/>

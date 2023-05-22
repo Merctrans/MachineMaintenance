@@ -7,8 +7,8 @@
       <field name="arch" type="xml">
         <xpath expr="//field[@name='category_id']" position="after">
           <field name="machine_code" />
-           <field name="machine_group_id" />
-           <field name="department_id" />
+          <field name="machine_group_id" />
+          <field name="department_id" />
           <field name="status_flag" />
           <field name="terminal_name" />
         </xpath>
@@ -47,6 +47,8 @@
           <field name="name" />
           <field name="purchase_order" />
           <field name="device_type" />
+          <field name="lcl" />
+          <field name="ucl" />
         </tree>
       </field>
     </record>
@@ -59,6 +61,8 @@
           <sheet>
             <group>
               <field name="name" />
+              <field name="lcl" />
+              <field name="ucl" />
               <field name="purchase_order" />
               <field name="device_type" />
               <field name="serial_number" />
