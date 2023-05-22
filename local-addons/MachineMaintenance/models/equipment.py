@@ -58,7 +58,7 @@ class MaintenanceDevice(models.Model):
     )
     replace = fields.Boolean(string="To be replaced", default=False)
     terminal = fields.Char(string="Terminal/IP", default="0.0.0.0")
-    equipment_id = fields.Many2one('maintenance.equipment', string='Equipment')
+    equipment_id = fields.Many2one("maintenance.equipment", string="Equipment")
 
 
 class MachineManagement(models.Model):
@@ -69,6 +69,4 @@ class MachineManagement(models.Model):
     department_id = fields.Many2one("machine.department", string="Department")
     status_flag = fields.Boolean(string="Active", default=False)
     terminal_name = fields.Char(string="Terminal Name")
-    device_ids = fields.One2many(
-        "machine.device", "equipment_id", string="Device List"
-    )
+    device_ids = fields.One2many("machine.device", "equipment_id", string="Device List")
