@@ -20,6 +20,9 @@
         # 'security/ir.model.access.csv',
         "views/check_sheet.xml",
         "views/machine.xml",
+        "views/department.xml",
+        "views/factory.xml",
+        "views/machine_group.xml",
     ],
     # only loaded in demonstration mode
     "demo": [

@@ -1,6 +1,6 @@
 from odoo import fields, api, models
 
-
+# TODO: Sheet san demo data vao file xml
 class Department(models.Model):
     _name = "department"
     _description = "Department in the company"
@@ -10,13 +10,14 @@ class Department(models.Model):
     code = fields.Char("Department Code", required=True)
     active = fields.Boolean("Active", default=True)
 
-    @api.onchange("code")
-    def _onchange_code(self):
-        """Code field to be capitalized"""
-        new_code = self.code
-        self.code = new_code.upper()
+    # @api.onchange("code")
+    # def _onchange_code(self):
+    #     """Code field to be capitalized"""
+    #     new_code = self.code
+    #     self.code = new_code.upper()
 
 
+# TODO: Sheet san demo data vao file xml
 class Factory(models.Model):
     _name = "factory"
     _description = "Factory model"
@@ -26,11 +27,11 @@ class Factory(models.Model):
     code = fields.Char("Factory Code", required=True)
     active = fields.Boolean("Active", default=True)
 
-    @api.onchange("code")
-    def _onchange_code(self):
-        """Code field to be capitalized"""
-        new_code = self.code
-        self.code = new_code.upper()
+    # @api.onchange("code")
+    # def _onchange_code(self):
+    #     """Code field to be capitalized"""
+    #     new_code = self.code
+    #     self.code = new_code.upper()
 
 
 class MachineGroup(models.Model):
@@ -64,8 +65,8 @@ class MachineManagement(models.Model):
     _inherit = "maintenance.equipment"
 
     machine_code = fields.Char(string="Machine Code")
-    machine_group_id = fields.Many2one("machine.group", string="Machine Group")
-    department_id = fields.Many2one("machine.department", string="Department")
+    # machine_group_id = fields.Many2one("machine.group", string="Machine Group")
+    # department_id = fields.Many2one("machine.department", string="Department")
     status_flag = fields.Boolean(string="Active", default=False)
     terminal_name = fields.Char(string="Terminal Name")
     # device_ids = fields.One2many(

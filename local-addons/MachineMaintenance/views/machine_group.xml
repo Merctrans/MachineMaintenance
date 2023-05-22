@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+    <record id="machine_group_view_tree" model="ir.ui.view">
+      <field name="name">machine.group.view.tree</field>
+      <field name="model">machine.group</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="mc_group_name" />
+          <field name="mc_group_code" />
+        </tree>
+      </field>
+    </record>
+
+    <record id="machine_group_view_form" model="ir.ui.view">
+      <field name="name">machine.group.view.form</field>
+      <field name="model">machine.group</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+              <field name="mc_group_name" />
+              <field name="mc_group_code" />
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="machine_group_action" model="ir.actions.act_window">
+      <field name="name">machine.group.action</field>
+      <field name="res_model">machine.group</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem name="Machine Group" id="menu_group" parent="maintenance.menu_maintenance_configuration" action="machine_group_action"/>
+  </data>
+</odoo>
