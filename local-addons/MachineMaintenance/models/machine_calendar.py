@@ -18,47 +18,9 @@ class MachineCalendar(models.Model):
         copy=False,
     )
 
-    machine = fields.Many2one(
-        "maintenance.equipment",
-        string="Machine",
-        compute="_compute_machine_id",
-        recursive=True,
-        store=True,
-        readonly=False,
-        precompute=True,
-        index=True,
-        tracking=True,
-        change_default=True,
-    )
-    id_display = fields.Char(compute="_compute_id")
-    machine_id = fields.Integer(string="Machine ID", compute="_get_machine_id")
-    device_list = fields.Many2many(
-        "machine.device",
-        string="Device List",
-    )
-    checksheet = fields.Many2many("check.sheet", string="Checksheet")
+    checksheet = fields.Many2one("check.sheet", string="Checksheet Parent")
+
     entry_data = fields.One2many("entry.data", "calendar_event", string="Entry")
-
-    def _compute_id(self):
-        for event in self:
-            if event.id or event._origin.id:
-                event.id_display = event._origin.id or event.id
-            else:
-                event.id_display = 0
-
-    @api.depends("machine")
-    def _compute_machine_id(self):
-        for x in self:
-            if x.machine:
-                x.machine = x.machine.id
-
-    @api.onchange("machine")
-    def _get_machine_id(self):
-        for record in self:
-            if record.machine:
-                record.machine_id = record.machine.id
-            else:
-                record.machine_id = 0
 
     @api.model
     def create(self, vals):
@@ -70,31 +32,34 @@ class MachineCalendar(models.Model):
                 or "New"
             )
         res = super(MachineCalendar, self).create(vals)
-        for sheet in res.checksheet:
-            self.env["entry.data"].sudo().create(
-                {
-                    "calendar_event": res.id,
-                    "check_sheet": sheet.id,
-                    "device": sheet.device,
-                }
-            )
+        if res.checksheet.device_list:
+            for device in res.checksheet:
+                self.env["entry.data"].sudo().create(
+                    {
+                        "calendar_event": res.id,
+                        "check_sheet": res.checksheet.id,
+                        "work_detail": f"Work Order {res.name} for device {device.name}",
+                        "device_id": device.id,
+                    }
+                )
 
         return res
 
     def write(self, vals):
         res = super().write(vals)
         if self.checksheet:
-            for sheet in self.checksheet:
+            for device in self.checksheet.device_list:
                 record = self.env["entry.data"].search(
-                    [("calendar_event", "=", self.id), ("check_sheet", "=", sheet.id)]
+                    [("calendar_event", "=", self.id), ("device_id", "=", device.id)]
                 )
 
                 if not record:
                     self.env["entry.data"].sudo().create(
                         {
                             "calendar_event": self.id,
-                            "check_sheet": sheet.id,
-                            "device": sheet.device,
+                            "check_sheet": self.checksheet.id,
+                            "work_detail": f"Work Order {self.name} for device {device.name}",
+                            "device_id": device.id,
                         }
                     )
         return True

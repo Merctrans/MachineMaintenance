@@ -53,6 +53,8 @@ class MaintenanceDevice(models.Model):
     device_type = fields.Char(string="Type")
     serial_number = fields.Char(string="Serial Number")
     quantity = fields.Integer(string="Quantity")
+    lcl = fields.Float(string="LCL", default=0.0)
+    ucl = fields.Float(string="UCL", default=0.0)
     old_new = fields.Selection(
         string="Old/New", selection=[("old", "Old"), ("new", "New")]
     )

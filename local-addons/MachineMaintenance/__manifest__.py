@@ -14,7 +14,7 @@
     "category": "Uncategorized",
     "version": "0.1",
     # any module necessary for this one to work correctly
-    "depends": ["base", "maintenance"],
+    "depends": ["base", "maintenance", "calendar"],
     # always loaded
     "data": [
         # 'security/ir.model.access.csv',
@@ -23,7 +23,7 @@
         "views/department.xml",
         "views/factory.xml",
         "views/machine_group.xml",
-        # "views/machine_calendar.xml",
+        "views/machine_calendar.xml",
     ],
     # only loaded in demonstration mode
     "demo": [
