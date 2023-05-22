@@ -17,22 +17,34 @@ class CheckSheet(models.Model):
 
     code = fields.Char("Check Sheet Code", compute="_generate_check_sheet_code")
     name = fields.Char("Check Sheet Name*", required=True)
-    department = fields.Many2one("machine.department", string="Department*", required=True)
+    department = fields.Many2one(
+        "machine.department", string="Department*", required=True
+    )
     factory = fields.Many2one("factory", string="Factory*", required=True)
     created_by = fields.Many2one("res.users", string="Created By*", required=True)
     create_date = fields.Datetime(readonly=True)
-    increment_number = fields.Integer(
+    number_order = fields.Char(
         string="Number Incremented",
-        default=lambda self: self.env["ir.sequence"].next_by_code(
-            "increment_your_field"
-        ),
+        default=lambda self: "New",
+        readonly=True,
+        index=True,
+        required=True,
+        copy=False,
     )
+
+    @api.model
+    def create(self, vals):
+        if vals.get("number_order", "New") == "New":
+            vals["number_order"] = (
+                self.env["ir.sequence"].next_by_code("increment_number_order") or "New"
+            )
+        return super(CheckSheet, self).create(vals)
 
     @api.onchange("department")
     def _generate_check_sheet_code(self):
         for rec in self:
             if rec.department:
-                rec.code = f"{rec.department.code}_{self.increment_number}"
+                rec.code = f"{rec.department.code}_{self.number_order}"
 
     """Frequency Combo Box"""
     frequency_type = fields.Selection(
@@ -97,12 +109,12 @@ class EntryData(models.Model):
     @api.onchange("ucl", "lcl", "value_show")
     def _auto_judgement(self):
         for rec in self:
-            if rec.entry_type == 'number':
+            if rec.entry_type == "number":
                 if float(rec.value_show) < rec.lcl or float(rec.value_show) > rec.ucl:
                     rec.update({"result_check": "ng"})
                 else:
                     rec.update({"result_check": "ok"})
-            if rec.entry_type == 'text':
+            if rec.entry_type == "text":
                 return
 
     def _inverse_compute(self):
@@ -123,15 +135,18 @@ class EntryData(models.Model):
     @api.onchange("ucl", "lcl", "value_show_after_action")
     def _auto_judgement_after_action(self):
         for rec in self:
-            if rec.entry_type == 'number':
-                if float(rec.value_show_after_action) < rec.lcl or float(rec.value_show_after_action) > rec.ucl:
+            if rec.entry_type == "number":
+                if (
+                    float(rec.value_show_after_action) < rec.lcl
+                    or float(rec.value_show_after_action) > rec.ucl
+                ):
                     rec.update({"result_check_after_action": "ng"})
                 else:
                     rec.update({"result_check_after_action": "ok"})
-            if rec.entry_type == 'text':
+            if rec.entry_type == "text":
                 return
 
     def _inverse_compute_after_action(self):
         return
 
-    remark = fields.Char(string='Remark')
+    remark = fields.Char(string="Remark")
