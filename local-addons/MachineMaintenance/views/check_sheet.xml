@@ -1,60 +1,118 @@
 <odoo>
   <data>
-    <!-- explicit list view definition -->
-<!--
-    <record model="ir.ui.view" id="sample_module.list">
-      <field name="name">sample_module list</field>
-      <field name="model">sample_module.sample_module</field>
+<!--    DATA ENTRY VIEW-->
+    <record model="ir.ui.view" id="data_entry_form_view">
+      <field name="name">Entry Transaction Form View</field>
+      <field name="model">entry.data</field>
       <field name="arch" type="xml">
-        <tree>
-          <field name="name"/>
-          <field name="value"/>
-          <field name="value2"/>
+        <form string="Entry Transaction">
+          <group>
+            <group>
+              <field name="check_sheet"/>
+              <field name="work_detail"/>
+              <field name="action"/>
+              <field name="entry_type" widget="radio"/>
+              <field name="lcl"/>
+              <field name="ucl"/>
+            </group>
+            <group>
+              <field name="value_show"/>
+              <field name="result_check"/>
+              <field name="action_ng"/>
+              <field name="value_show_after_action"/>
+              <field name="result_check_after_action"/>
+              <field name="remark"/>
+            </group>
+          </group>
+
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="data_entry_tree_view">
+      <field name="name">Entry Transaction Tree View</field>
+      <field name="model">entry.data</field>
+      <field name="arch" type="xml">
+        <tree string="Entry Transactions">
+          <field name="check_sheet"/>
+          <field name="work_detail"/>
+          <field name="action"/>
+          <field name="entry_type" widget="radio"/>
+          <field name="lcl"/>
+          <field name="ucl"/>
+          <field name="value_show"/>
+          <field name="result_check"/>
+          <field name="action_ng"/>
+          <field name="value_show_after_action"/>
+          <field name="result_check_after_action"/>
+          <field name="remark"/>
         </tree>
       </field>
     </record>
--->
 
-    <!-- actions opening views on models -->
-<!--
-    <record model="ir.actions.act_window" id="sample_module.action_window">
-      <field name="name">sample_module window</field>
-      <field name="res_model">sample_module.sample_module</field>
+    <record id="data_entry_action" model="ir.actions.act_window">
+      <field name="name">Data Entry Form MAIN PAGE</field>
+      <field name="res_model">entry.data</field>
       <field name="view_mode">tree,form</field>
     </record>
--->
 
-    <!-- server action to the one above -->
-<!--
-    <record model="ir.actions.server" id="sample_module.action_server">
-      <field name="name">sample_module server</field>
-      <field name="model_id" ref="model_sample_module_sample_module"/>
-      <field name="state">code</field>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "tree,form",
-          "res_model": model._name,
-        }
+    <menuitem id="data_entry_form" name="Data Entry" parent="maintenance.menu_m_request"
+              action="data_entry_action" sequence="12"/>
+
+<!--    CHECK SHEET VIEW-->
+
+    <record model="ir.ui.view" id="check_sheet_form_view">
+      <field name="name">Check Sheet Form View</field>
+      <field name="model">check.sheet</field>
+      <field name="arch" type="xml">
+        <form string="Check Sheet">
+          <sheet>
+            <group>
+              <field name="code"/>
+              <field name="name"/>
+              <field name="department"/>
+              <field name="factory"/>
+            </group>
+            <group>
+              <field name="created_by"/>
+              <field name="create_date"/>
+              <field name="increment_number"/>
+            </group>
+          </sheet>
+          <sheet>
+            <notebook>
+              <page string="Entry Data" name="Entry Data">
+                <field name="entry_data">
+                  <tree editable="bottom">
+                    <field name="check_sheet"/>
+                    <field name="work_detail"/>
+                    <field name="action"/>
+                    <field name="entry_type" widget="radio"/>
+                    <field name="lcl"/>
+                    <field name="ucl"/>
+                    <field name="value_show"/>
+                    <field name="result_check"/>
+                    <field name="action_ng"/>
+                    <field name="value_show_after_action"/>
+                    <field name="result_check_after_action"/>
+                    <field name="remark"/>
+                  </tree>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
       </field>
     </record>
--->
 
-    <!-- Top menu item -->
-<!--
-    <menuitem name="sample_module" id="sample_module.menu_root"/>
--->
-    <!-- menu categories -->
-<!--
-    <menuitem name="Menu 1" id="sample_module.menu_1" parent="sample_module.menu_root"/>
-    <menuitem name="Menu 2" id="sample_module.menu_2" parent="sample_module.menu_root"/>
--->
-    <!-- actions -->
-<!--
-    <menuitem name="List" id="sample_module.menu_1_list" parent="sample_module.menu_1"
-              action="sample_module.action_window"/>
-    <menuitem name="Server to list" id="sample_module" parent="sample_module.menu_2"
-              action="sample_module.action_server"/>
--->
+    <record id="check_sheet_action" model="ir.actions.act_window">
+      <field name="name">Check Sheet</field>
+      <field name="res_model">check.sheet</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="check_sheet_form" name="Check Sheet" parent="maintenance.menu_m_request"
+              action="check_sheet_action"
+              sequence="10"/>
   </data>
 </odoo>

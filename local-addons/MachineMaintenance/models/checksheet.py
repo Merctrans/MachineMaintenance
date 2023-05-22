@@ -17,7 +17,7 @@ class CheckSheet(models.Model):
 
     code = fields.Char("Check Sheet Code", compute="_generate_check_sheet_code")
     name = fields.Char("Check Sheet Name*", required=True)
-    department = fields.Many2one("department", string="Department*", required=True)
+    department = fields.Many2one("machine.department", string="Department*", required=True)
     factory = fields.Many2one("factory", string="Factory*", required=True)
     created_by = fields.Many2one("res.users", string="Created By*", required=True)
     create_date = fields.Datetime(readonly=True)
@@ -79,7 +79,7 @@ class EntryData(models.Model):
         required=True,
         default="check",
     )
-    entry_type = fields.Selection(selection=[("number", "number"), ("text", "Text")])
+    entry_type = fields.Selection(selection=[("number", "Number"), ("text", "Text")])
 
     lcl = fields.Float(string="LCL", default=0.0)
     ucl = fields.Float(string="UCL", default=0.0)
@@ -93,30 +93,17 @@ class EntryData(models.Model):
 
     """Auto Judgement"""
 
-    def is_float(element: any) -> bool:
-        # If you expect None to be passed:
-        if element is None:
-            return False
-        try:
-            float(element)
-            return True
-        except ValueError:
-            return False
-
     @api.depends("ucl", "lcl")
     @api.onchange("ucl", "lcl", "value_show")
     def _auto_judgement(self):
         for rec in self:
-            if self.is_float(self.value_show):
-                if (
-                    float(self.value_show) < self.lcl
-                    or float(self.value_show) > self.ucl
-                ):
-                    self.update({"result_check": "ng"})
+            if rec.entry_type == 'number':
+                if float(rec.value_show) < rec.lcl or float(rec.value_show) > rec.ucl:
+                    rec.update({"result_check": "ng"})
                 else:
-                    self.update({"result_check": "ok"})
-            else:
-                raise ValueError("Value is not float, cannot use auto judgement")
+                    rec.update({"result_check": "ok"})
+            if rec.entry_type == 'text':
+                return
 
     def _inverse_compute(self):
         return
@@ -136,16 +123,15 @@ class EntryData(models.Model):
     @api.onchange("ucl", "lcl", "value_show_after_action")
     def _auto_judgement_after_action(self):
         for rec in self:
-            if self.is_float(self.value_show_after_action):
-                if (
-                    float(self.value_show_after_action) < self.lcl
-                    or float(self.value_show_after_action) > self.ucl
-                ):
-                    self.update({"result_check": "ng"})
+            if rec.entry_type == 'number':
+                if float(rec.value_show_after_action) < rec.lcl or float(rec.value_show_after_action) > rec.ucl:
+                    rec.update({"result_check_after_action": "ng"})
                 else:
-                    self.update({"result_check": "ok"})
-            else:
-                raise ValueError("Value is not float, cannot use auto judgement")
+                    rec.update({"result_check_after_action": "ok"})
+            if rec.entry_type == 'text':
+                return
 
     def _inverse_compute_after_action(self):
         return
+
+    remark = fields.Char(string='Remark')
