@@ -16,24 +16,24 @@
           <page string="Device List" name="Device List">
             <field name="device_ids">
               <tree>
-                <field name="name"/>
-                <field name="purchase_order"/>
-                <field name="device_type"/>
-                <field name="serial_number"/>
-                <field name="quantity"/>
-                <field name="old_new"/>
-                <field name="replace"/>
-                <field name="terminal"/>
+                <field name="name" />
+                <field name="purchase_order" />
+                <field name="device_type" />
+                <field name="serial_number" />
+                <field name="quantity" />
+                <field name="old_new" />
+                <field name="replace" />
+                <field name="terminal" />
               </tree>
             </field>
           </page>
         </notebook>
         <xpath expr="//field[@name='maintenance_team_id']" position="replace">
         </xpath>
-        <xpath expr="//field[@name='technician_user_id']" position="replace"/>
-        <xpath expr="//field[@name='assign_date']" position="replace"/>
-        <xpath expr="//field[@name='scrap_date']" position="replace"/>
-        <xpath expr="//field[@name='location']" position="replace"/>
+        <xpath expr="//field[@name='technician_user_id']" position="replace" />
+        <xpath expr="//field[@name='assign_date']" position="replace" />
+        <xpath expr="//field[@name='scrap_date']" position="replace" />
+        <xpath expr="//field[@name='location']" position="replace" />
         <xpath expr="//notebook/page[3]" position="replace">
         </xpath>
       </field>
@@ -47,8 +47,8 @@
           <field name="name" />
           <field name="purchase_order" />
           <field name="device_type" />
-          <field name="lcl" />
-          <field name="ucl" />
+          <!-- <field name="lcl" /> -->
+          <!-- <field name="ucl" /> -->
         </tree>
       </field>
     </record>
@@ -61,8 +61,8 @@
           <sheet>
             <group>
               <field name="name" />
-              <field name="lcl" />
-              <field name="ucl" />
+              <!-- <field name="lcl" /> -->
+              <!-- <field name="ucl" /> -->
               <field name="purchase_order" />
               <field name="device_type" />
               <field name="serial_number" />
