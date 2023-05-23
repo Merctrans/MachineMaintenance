@@ -38,7 +38,7 @@ class CheckSheet(models.Model):
     def create(self, vals):
         if vals.get("number_order", "New") == "New":
             vals["number_order"] = (
-                self.env["ir.sequence"].next_by_code("increment_number_order") or "New"
+                    self.env["ir.sequence"].next_by_code("increment_number_order") or "New"
             )
         return super(CheckSheet, self).create(vals)
 
@@ -55,10 +55,9 @@ class CheckSheet(models.Model):
         required=True,
         default="one_month",
     )
-    frequency = fields.Integer("Frequency in Days", compute="_get_frequency_days")
+    frequency = fields.Integer("Frequency in Days", compute="_get_frequency_days", inverse="_inverse_get_freq")
 
     @api.depends("frequency_type")
-    @api.onchange("frequency_type")
     def _get_frequency_days(self):
         for rec in self:
             if rec.frequency_type:
@@ -72,6 +71,9 @@ class CheckSheet(models.Model):
                     rec.frequency = 360
                 else:
                     rec.frequency = 0
+
+    def _inverse_get_freq(self):
+        return
 
     entry_data = fields.One2many("entry.data", "check_sheet", string="Entry Data")
 
@@ -140,8 +142,8 @@ class EntryData(models.Model):
         for rec in self:
             if rec.entry_type == "number":
                 if (
-                    float(rec.value_show_after_action) < rec.lcl
-                    or float(rec.value_show_after_action) > rec.ucl
+                        float(rec.value_show_after_action) < rec.lcl
+                        or float(rec.value_show_after_action) > rec.ucl
                 ):
                     rec.update({"result_check_after_action": "ng"})
                 else:
