@@ -24,6 +24,7 @@
         "views/factory.xml",
         "views/machine_group.xml",
         "views/machine_calendar.xml",
+        "views/menuitem.xml",
     ],
     # only loaded in demonstration mode
     "demo": [
