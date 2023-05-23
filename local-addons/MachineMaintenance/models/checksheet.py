@@ -55,9 +55,10 @@ class CheckSheet(models.Model):
         required=True,
         default="one_month",
     )
-    frequency = fields.Integer("Frequency in Days", compute="_get_frequency_days", inverse="_inverse_get_freq")
+    frequency = fields.Integer("Frequency in Days", compute="_get_frequency_days", inverse="_inverse_get_freq", store=True)
 
     @api.depends("frequency_type")
+    @api.onchange("frequency_type")
     def _get_frequency_days(self):
         for rec in self:
             if rec.frequency_type:
@@ -106,6 +107,7 @@ class EntryData(models.Model):
         default="ok",
         compute="_auto_judgement",
         inverse="_inverse_compute",
+        store=True
     )
 
     """Auto Judgement"""
