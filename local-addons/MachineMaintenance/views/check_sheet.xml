@@ -87,6 +87,8 @@
               <field name="created_by"/>
               <field name="create_date"/>
               <field name="number_order" invisible="1"/>
+              <field name="frequency_type"/>
+              <field name="frequency"/>
             </group>
           </sheet>
           <sheet>
