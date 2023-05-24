@@ -135,6 +135,7 @@ class EntryData(models.Model):
         compute="_auto_judgement_after_action",
         inverse="_inverse_compute_after_action",
     )
+    image = fields.Image(string="Image")
 
     """Auto Judgement after action"""
 
