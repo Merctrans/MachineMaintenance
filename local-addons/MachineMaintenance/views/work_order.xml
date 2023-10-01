@@ -1,0 +1,54 @@
+<odoo>
+    <data>
+        <record id="work_order_action" model="ir.actions.act_window">
+            <field name="name">Work Order</field>
+            <field name="res_model">work.order</field> <!-- Replace with the actual model name -->
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="work_order_menu" name="Work Order" parent="maintenance.menu_m_request" action="work_order_action"
+                  sequence="20"/>
+
+        <record id="view_work_order_form" model="ir.ui.view">
+            <field name="name">work.order.form</field>
+            <field name="model">work.order</field>
+            <field name="arch" type="xml">
+                <form string="Work Order">
+                    <sheet>
+                        <group>
+                            <field name="check_sheet_template_id"/>
+                            <field name="machine_id"/>
+                            <field name="machine_check_sheet_id"/>
+                        </group>
+                        <notebook>
+                            <page string="Entry Data Details">
+                                <field name="entry_data_details">
+                                    <form string="Entry Data Details">
+                                        <!-- Define the fields of Entry Data model that you want to display/edit in the form view -->
+                                        <field name="work_detail"/>
+                                        <field name="action"/>
+                                        <!-- ... other fields ... -->
+                                    </form>
+                                    <tree editable="bottom">
+                                        <!-- Define the fields of Entry Data model that you want to display/edit in the tree view -->
+                                        <field name="work_detail"/>
+                                        <field name="action"/>
+                                        <field name="lcl"/>
+                                        <field name="ucl"/>
+                                        <field name="value_show"/>
+                                        <field name="result_check"/>
+                                        <field name="action_ng"/>
+                                        <field name="value_show_after_action"/>
+                                        <field name="result_check_after_action"/>
+                                        <field name="remark"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

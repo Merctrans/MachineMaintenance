@@ -15,16 +15,10 @@ class CheckSheet(models.Model):
         ("other", "Other"),
     ]
 
-    code = fields.Char("Check Sheet Code", compute="_generate_check_sheet_code")
+    code = fields.Char("Check Sheet Code", required=True)
     name = fields.Char("Check Sheet Name*", required=True)
-    equipment_id = fields.Many2one("maintenance.equipment", string="Equipment*")
-    device_list = fields.Many2many("machine.device", string="Device List")
-    department = fields.Many2one(
-        "machine.department", string="Department*", required=True
-    )
-    factory = fields.Many2one("factory", string="Factory*", required=True)
-    created_by = fields.Many2one("res.users", string="Created By*", required=True)
-    create_date = fields.Datetime(readonly=True)
+    created_by = fields.Many2one("res.users", string="Created By*", required=True, default=lambda self: self.env.user)
+    create_date = fields.Datetime(readonly=True, default=fields.Datetime.now)
     number_order = fields.Char(
         string="Number Incremented",
         default=lambda self: "New",
@@ -42,12 +36,6 @@ class CheckSheet(models.Model):
             )
         return super(CheckSheet, self).create(vals)
 
-    @api.onchange("department")
-    def _generate_check_sheet_code(self):
-        for rec in self:
-            if rec.department:
-                rec.code = f"{rec.department.code}_{self.number_order}"
-
     """Frequency Combo Box"""
     frequency_type = fields.Selection(
         selection=frequency_list,
@@ -55,7 +43,8 @@ class CheckSheet(models.Model):
         required=True,
         default="one_month",
     )
-    frequency = fields.Integer("Frequency in Days", compute="_get_frequency_days", inverse="_inverse_get_freq", store=True)
+    frequency = fields.Integer("Frequency in Days", compute="_get_frequency_days", inverse="_inverse_get_freq",
+                               store=True)
 
     @api.depends("frequency_type")
     @api.onchange("frequency_type")
@@ -84,8 +73,8 @@ class EntryData(models.Model):
     _description = "Data Entry for Check sheet"
 
     check_sheet = fields.Many2one("check.sheet", string="Check Sheet")
-    device_id = fields.Many2one("machine.device", string="Device")
-    calendar_event = fields.Many2one("calendar.event", string="Work Order")
+    # device_id = fields.Many2one("machine.device", string="Device")
+    # calendar_event = fields.Many2one("calendar.event", string="Work Order")
     work_detail = fields.Char("Detailed Work", required=True)
     action = fields.Selection(
         selection=[
@@ -104,7 +93,6 @@ class EntryData(models.Model):
     value_show = fields.Char(string="Value Show")
     result_check = fields.Selection(
         selection=[("ok", "OK"), ("ng", "NG")],
-        default="ok",
         compute="_auto_judgement",
         inverse="_inverse_compute",
         store=True
@@ -131,7 +119,6 @@ class EntryData(models.Model):
     value_show_after_action = fields.Char(string="Value Showed After Action")
     result_check_after_action = fields.Selection(
         selection=[("ok", "OK"), ("ng", "NG")],
-        default="ok",
         compute="_auto_judgement_after_action",
         inverse="_inverse_compute_after_action",
     )
@@ -158,3 +145,65 @@ class EntryData(models.Model):
         return
 
     remark = fields.Char(string="Remark")
+    work_order_id = fields.Many2one('work.order', string='Work Order')
+
+
+class MachineEntryData(models.Model):
+    _name = "machine.entry.data"
+    _inherit = "entry.data"
+
+    machine_check_sheet_id = fields.Many2one('machine.check.sheet', string='Machine Check Sheet')
+    work_order_id = fields.Many2one('work.order', string='Work Order')
+
+
+class MachineCheckSheet(models.Model):
+    _name = 'machine.check.sheet'
+
+    machine_id = fields.Many2one('maintenance.equipment', string='Machine')
+    check_sheet_template_id = fields.Many2one('check.sheet', string='Check Sheet Template')
+    entry_data_details = fields.One2many('machine.entry.data', compute='_compute_entry_data_details', readonly=False,
+                                         string='Entry Data Details')
+
+
+class WorkOrder(models.Model):
+    _name = 'work.order'
+    _description = 'Work Order'
+
+    check_sheet_template_id = fields.Many2one('check.sheet', string='Check Sheet Template')
+    machine_id = fields.Many2one('maintenance.equipment', string='Machine')
+    machine_check_sheet_id = fields.Many2one('machine.check.sheet', string='Machine Check Sheet')
+    entry_data_details = fields.One2many('machine.entry.data', 'work_order_id', string='Entry Data Details')
+
+    @api.onchange('check_sheet_template_id')
+    def _onchange_check_sheet_template_id(self):
+        if self.check_sheet_template_id:
+            # Creating a new machine.check.sheet record
+            machine_sheet = self.env['machine.check.sheet'].create({
+                'machine_id': self.machine_id.id,
+                'check_sheet_template_id': self.check_sheet_template_id.id,
+            })
+
+            # Fetching entry.data from the selected check_sheet_template_id
+            entry_data_records = self.env['entry.data'].search([('check_sheet', '=', self.check_sheet_template_id.id)])
+
+            # Creating new machine.entry.data records linked to this work.order
+            new_entry_data_records = []
+            for record in entry_data_records:
+                new_entry_data_records.append((0, 0, {
+                    'machine_check_sheet_id': machine_sheet.id,
+                    'check_sheet': record.check_sheet.id,
+                    'work_detail': record.work_detail,
+                    'action': record.action,
+                    'entry_type': record.entry_type,
+                    'lcl': record.lcl,
+                    'ucl': record.ucl,
+                    'value_show': record.value_show,
+                    'result_check': record.result_check,
+                    'action_ng': record.action_ng,
+                    'value_show_after_action': record.value_show_after_action,
+                    'result_check_after_action': record.result_check_after_action,
+                    'image': record.image,
+                    'remark': record.remark,
+                }))
+            self.entry_data_details = new_entry_data_records
+            self.machine_check_sheet_id = machine_sheet.id
