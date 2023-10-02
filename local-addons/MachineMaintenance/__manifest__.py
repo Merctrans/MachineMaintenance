@@ -25,6 +25,7 @@
         "views/machine_group.xml",
         "views/machine_calendar.xml",
         "views/work_order.xml",
+        "views/maintain_schedule.xml",
     ],
     # only loaded in demonstration mode
     "demo": [

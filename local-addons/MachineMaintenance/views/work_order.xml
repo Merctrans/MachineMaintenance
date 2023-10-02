@@ -20,6 +20,7 @@
                             <field name="check_sheet_template_id"/>
                             <field name="machine_id"/>
                             <field name="machine_check_sheet_id"/>
+                            <field name="date"/>
                             <field name="frequency_type"/>
                             <field name="frequency"/>
                         </group>
@@ -51,6 +52,21 @@
                         </notebook>
                     </sheet>
                 </form>
+            </field>
+        </record>
+        <record id="view_work_order_tree" model="ir.ui.view">
+            <field name="name">work.order.tree</field>
+            <field name="model">work.order</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="check_sheet_template_id"/>
+                    <field name="machine_id"/>
+                    <field name="machine_check_sheet_id"/>
+                    <field name="date"/>
+                    <field name="frequency_type"/>
+                    <field name="frequency"/>
+                </tree>
             </field>
         </record>
         <!-- Tree View -->

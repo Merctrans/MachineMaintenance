@@ -54,7 +54,7 @@ class CheckSheet(models.Model):
                 if rec.frequency_type == "one_month":
                     rec.frequency = 30
                 elif rec.frequency_type == "three_months":
-                    rec.frequency = 60
+                    rec.frequency = 90
                 elif rec.frequency_type == "six_months":
                     rec.frequency = 180
                 elif rec.frequency_type == "twelve_months":
@@ -192,6 +192,7 @@ class WorkOrder(models.Model):
     check_sheet_template_id = fields.Many2one('check.sheet', string='Check Sheet Template')
     machine_id = fields.Many2one('maintenance.equipment', string='Machine')
     machine_check_sheet_id = fields.Many2one('machine.check.sheet', string='Machine Check Sheet')
+    date = fields.Date(string='Date')
     entry_data_details = fields.One2many('machine.entry.data', 'work_order_id', string='Entry Data Details',
                                          ondelete='cascade')
     frequency_type = fields.Selection(

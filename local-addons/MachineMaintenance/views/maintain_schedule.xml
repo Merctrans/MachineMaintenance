@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Action Window for Maintain Schedule -->
+        <record id="maintain_schedule_action" model="ir.actions.act_window">
+            <field name="name">Maintain Schedule</field>
+            <field name="res_model">maintain.schedule</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Tree View for Maintain Schedule -->
+        <record id="view_maintain_schedule_tree" model="ir.ui.view">
+            <field name="name">maintain.schedule.tree</field>
+            <field name="model">maintain.schedule</field>
+            <field name="arch" type="xml">
+                <tree string="Maintain Schedule">
+                    <field name="name"/>
+                    <field name="machine_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View for Maintain Schedule -->
+        <record id="view_maintain_schedule_form" model="ir.ui.view">
+            <field name="name">maintain.schedule.form</field>
+            <field name="model">maintain.schedule</field>
+            <field name="arch" type="xml">
+                <form string="Maintain Schedule">
+                    <header>
+                        <button name="create_work_orders" string="Create Work Orders" type="object"
+                                class="oe_highlight"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="machine_id"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="work_order_ids" options="{'no_create': True}">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="frequency_type"/>
+                                    <field name="frequency"/>
+                                    <field name="date"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Linking Views to Action -->
+        <record id="maintain_schedule_action" model="ir.actions.act_window">
+            <field name="view_id" ref="view_maintain_schedule_tree"/>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menu Item for Maintain Schedule -->
+        <menuitem id="maintain_schedule_menu" name="Maintain Schedule" parent="maintenance.menu_m_request"
+                  action="maintain_schedule_action" sequence="21"/>
+    </data>
+</odoo>
