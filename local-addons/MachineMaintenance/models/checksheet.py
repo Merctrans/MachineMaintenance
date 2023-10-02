@@ -172,11 +172,11 @@ class WorkOrder(models.Model):
     check_sheet_template_id = fields.Many2one('check.sheet', string='Check Sheet Template')
     machine_id = fields.Many2one('maintenance.equipment', string='Machine')
     machine_check_sheet_id = fields.Many2one('machine.check.sheet', string='Machine Check Sheet')
-    entry_data_details = fields.One2many('machine.entry.data', 'work_order_id', string='Entry Data Details')
+    entry_data_details = fields.One2many('machine.entry.data', 'work_order_id', string='Entry Data Details', ondelete='cascade')
 
-    @api.onchange('check_sheet_template_id')
+    @api.onchange('check_sheet_template_id','machine_id')
     def _onchange_check_sheet_template_id(self):
-        if self.check_sheet_template_id:
+        if self.check_sheet_template_id and self.machine_id:
             # Creating a new machine.check.sheet record
             machine_sheet = self.env['machine.check.sheet'].create({
                 'machine_id': self.machine_id.id,
@@ -187,9 +187,9 @@ class WorkOrder(models.Model):
             entry_data_records = self.env['entry.data'].search([('check_sheet', '=', self.check_sheet_template_id.id)])
 
             # Creating new machine.entry.data records linked to this work.order
-            new_entry_data_records = []
             for record in entry_data_records:
-                new_entry_data_records.append((0, 0, {
+                # Create a dictionary with the required values
+                values = {
                     'machine_check_sheet_id': machine_sheet.id,
                     'check_sheet': record.check_sheet.id,
                     'work_detail': record.work_detail,
@@ -202,8 +202,18 @@ class WorkOrder(models.Model):
                     'action_ng': record.action_ng,
                     'value_show_after_action': record.value_show_after_action,
                     'result_check_after_action': record.result_check_after_action,
-                    'image': record.image,
                     'remark': record.remark,
-                }))
+                }
+
+                # Create a new record in the 'machine.entry.data' model
+                entry_data_record = self.env['machine.entry.data'].create(values)
+
+                # Run the auto judgement methods on the newly created record
+                entry_data_record._auto_judgement()
+                entry_data_record._auto_judgement_after_action()
+
+                # Append the ID of the newly created record to the list
+                new_entry_data_records.append((4, entry_data_record.id))
+
             self.entry_data_details = new_entry_data_records
             self.machine_check_sheet_id = machine_sheet.id
