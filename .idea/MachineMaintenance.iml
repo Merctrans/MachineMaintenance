@@ -4,8 +4,8 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
-    <content url="file://$MODULE_DIR$/../odoo/odoo" />
-    <orderEntry type="jdk" jdkName="Python 3.9 (MachineMaintenance)" jdkType="Python SDK" />
+    <content url="file://$MODULE_DIR$/../odoo16/odoo" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

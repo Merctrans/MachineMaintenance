@@ -155,28 +155,70 @@ class MachineEntryData(models.Model):
     machine_check_sheet_id = fields.Many2one('machine.check.sheet', string='Machine Check Sheet')
     work_order_id = fields.Many2one('work.order', string='Work Order')
 
+    @api.depends("ucl", "lcl", "value_show")
+    @api.onchange("ucl", "lcl", "value_show")
+    def _auto_judgement(self):
+        super(MachineEntryData, self)._auto_judgement()  # Calling the parent class method
+
+    @api.depends("ucl", "lcl", "value_show_after_action")
+    @api.onchange("ucl", "lcl", "value_show_after_action")
+    def _auto_judgement_after_action(self):
+        super(MachineEntryData, self)._auto_judgement_after_action()  # Calling the parent class method
+
 
 class MachineCheckSheet(models.Model):
     _name = 'machine.check.sheet'
+    _rec_name = 'check_sheet_template_id'
 
     machine_id = fields.Many2one('maintenance.equipment', string='Machine')
     check_sheet_template_id = fields.Many2one('check.sheet', string='Check Sheet Template')
     entry_data_details = fields.One2many('machine.entry.data', compute='_compute_entry_data_details', readonly=False,
-                                         string='Entry Data Details')
+                                         string='Entry Data Details', ondelete='cascade')
+
+    def unlink(self):
+        # Delete related machine.entry.data records manually before deleting machine.check.sheet.
+        for record in self:
+            self.env['machine.entry.data'].search([('machine_check_sheet_id', '=', record.id)]).unlink()
+        return super(MachineCheckSheet,
+                     self).unlink()  # Call the original unlink to delete the machine.check.sheet record.
 
 
 class WorkOrder(models.Model):
     _name = 'work.order'
     _description = 'Work Order'
+    _rec_name = 'name'
 
+    name = fields.Char(string='Work Order Name', default='New Work Order', index=True, required=True)
     check_sheet_template_id = fields.Many2one('check.sheet', string='Check Sheet Template')
     machine_id = fields.Many2one('maintenance.equipment', string='Machine')
     machine_check_sheet_id = fields.Many2one('machine.check.sheet', string='Machine Check Sheet')
-    entry_data_details = fields.One2many('machine.entry.data', 'work_order_id', string='Entry Data Details', ondelete='cascade')
+    entry_data_details = fields.One2many('machine.entry.data', 'work_order_id', string='Entry Data Details',
+                                         ondelete='cascade')
+    frequency_type = fields.Selection(
+        selection=[("one_month", "1 Month"),
+                   ("three_months", "3 Months"),
+                   ("six_months", "6 Months"),
+                   ("twelve_months", "12 Months"),
+                   ("trouble", "Trouble"),
+                   ("other", "Other")],
+        string='Frequency Type',
+        store=True, )
 
-    @api.onchange('check_sheet_template_id','machine_id')
+    frequency = fields.Integer("Frequency in Days", store=True)
+
+    @api.onchange('check_sheet_template_id', 'machine_id')
     def _onchange_check_sheet_template_id(self):
         if self.check_sheet_template_id and self.machine_id:
+            self.frequency_type = self.check_sheet_template_id.frequency_type
+            self.frequency = self.check_sheet_template_id.frequency
+
+            # Removing the existing entry data details from the database
+            for entry_data_detail in self.entry_data_details:
+                entry_data_detail.unlink()
+
+            # Clearing the existing entry data details
+            self.entry_data_details = []
+
             # Creating a new machine.check.sheet record
             machine_sheet = self.env['machine.check.sheet'].create({
                 'machine_id': self.machine_id.id,
@@ -187,8 +229,8 @@ class WorkOrder(models.Model):
             entry_data_records = self.env['entry.data'].search([('check_sheet', '=', self.check_sheet_template_id.id)])
 
             # Creating new machine.entry.data records linked to this work.order
+            new_entry_data_records = []
             for record in entry_data_records:
-                # Create a dictionary with the required values
                 values = {
                     'machine_check_sheet_id': machine_sheet.id,
                     'check_sheet': record.check_sheet.id,
@@ -205,15 +247,14 @@ class WorkOrder(models.Model):
                     'remark': record.remark,
                 }
 
-                # Create a new record in the 'machine.entry.data' model
                 entry_data_record = self.env['machine.entry.data'].create(values)
-
-                # Run the auto judgement methods on the newly created record
-                entry_data_record._auto_judgement()
-                entry_data_record._auto_judgement_after_action()
-
-                # Append the ID of the newly created record to the list
                 new_entry_data_records.append((4, entry_data_record.id))
 
             self.entry_data_details = new_entry_data_records
             self.machine_check_sheet_id = machine_sheet.id
+
+    def unlink(self):
+        for record in self:
+            if record.machine_check_sheet_id:
+                record.machine_check_sheet_id.unlink()
+        return super(WorkOrder, self).unlink()
