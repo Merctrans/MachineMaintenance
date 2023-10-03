@@ -1,0 +1,146 @@
+<odoo>
+    <data>
+        <record id="work_order_action" model="ir.actions.act_window">
+            <field name="name">Work Order</field>
+            <field name="res_model">work.order</field> <!-- Replace with the actual model name -->
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="work_order_menu" name="Work Order" parent="maintenance.menu_m_request" action="work_order_action"
+                  sequence="20"/>
+
+        <record id="view_work_order_form" model="ir.ui.view">
+            <field name="name">work.order.form</field>
+            <field name="model">work.order</field>
+            <field name="arch" type="xml">
+                <form string="Work Order">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="check_sheet_template_id"/>
+                            <field name="machine_id"/>
+                            <field name="machine_check_sheet_id"/>
+                            <field name="date"/>
+                            <field name="frequency_type"/>
+                            <field name="frequency"/>
+                        </group>
+                        <notebook>
+                            <page string="Entry Data Details">
+                                <field name="entry_data_details">
+                                    <form string="Entry Data Details">
+                                        <!-- Define the fields of Entry Data model that you want to display/edit in the form view -->
+                                        <field name="work_detail"/>
+                                        <field name="action"/>
+                                        <!-- ... other fields ... -->
+                                    </form>
+                                    <tree editable="bottom">
+                                        <!-- Define the fields of Entry Data model that you want to display/edit in the tree view -->
+                                        <field name="work_detail"/>
+                                        <field name="action"/>
+                                        <field name="lcl"/>
+                                        <field name="ucl"/>
+                                        <field name="value_show"/>
+                                        <field name="result_check"/>
+                                        <field name="action_ng"/>
+                                        <field name="value_show_after_action"/>
+                                        <field name="result_check_after_action"/>
+                                        <field name="remark"/>
+                                        <field name="image" widget='image' class="oe_avatar oe_left"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_work_order_tree" model="ir.ui.view">
+            <field name="name">work.order.tree</field>
+            <field name="model">work.order</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="check_sheet_template_id"/>
+                    <field name="machine_id"/>
+                    <field name="machine_check_sheet_id"/>
+                    <field name="date"/>
+                    <field name="frequency_type"/>
+                    <field name="frequency"/>
+                </tree>
+            </field>
+        </record>
+        <!-- Tree View -->
+        <record id="view_machine_entry_data_tree" model="ir.ui.view">
+            <field name="name">machine.entry.data.tree</field>
+            <field name="model">machine.entry.data</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="work_order_id"/>
+                    <field name="machine_check_sheet_id"/>
+                    <field name="work_detail"/>
+                    <!-- Include other fields as necessary -->
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_machine_entry_data_form" model="ir.ui.view">
+            <field name="name">machine.entry.data.form</field>
+            <field name="model">machine.entry.data</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="machine_check_sheet_id"/>
+                        <field name="work_order_id"/>
+                        <field name="work_detail"/>
+                        <field name="action"/>
+                        <field name="entry_type"/>
+                        <field name="lcl"/>
+                        <field name="ucl"/>
+                        <field name="value_show"/>
+                        <field name="result_check"/>
+                        <field name="action_ng"/>
+                        <field name="value_show_after_action"/>
+                        <field name="result_check_after_action"/>
+                        <field name="remark"/>
+                        <field name="image" widget='image' class="oe_avatar oe_left"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_machine_entry_data_search" model="ir.ui.view">
+            <field name="name">machine.entry.data.search</field>
+            <field name="model">machine.entry.data</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="work_order_id"/>
+                    <field name="machine_check_sheet_id"/>
+                    <field name="work_detail"/>
+                    <!-- Include other fields as necessary -->
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_machine_entry_data" model="ir.actions.act_window">
+            <field name="name">Machine Entry Data</field>
+            <field name="res_model">machine.entry.data</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_machine_entry_data_tree"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create the first Machine Entry Data
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu Item -->
+        <menuitem id="machine_entry_data_menu"
+                  name="Machine Entry Data"
+                  parent="maintenance.menu_m_request"
+                  action="action_machine_entry_data"
+                  sequence="21"/>
+    </data>
+</odoo>

@@ -5,7 +5,11 @@
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <content url="file://$MODULE_DIR$/../odoo/odoo" />
-    <orderEntry type="jdk" jdkName="Python 3.9 (MachineMaintenance)" jdkType="Python SDK" />
+    <content url="file://$MODULE_DIR$/../odoo16">
+      <sourceFolder url="file://$MODULE_DIR$/../odoo16" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../odoo16/odoo" isTestSource="false" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 3.10 (MachineMaintenance1)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
